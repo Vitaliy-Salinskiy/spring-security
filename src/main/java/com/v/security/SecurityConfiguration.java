@@ -8,13 +8,14 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+// import org.springframework.security.core.userdetails.User;
+// import org.springframework.security.core.userdetails.UserDetails;
+// import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import com.v.security.models.MyUserDetailService;
 
@@ -24,7 +25,7 @@ public class SecurityConfiguration {
 
     @Autowired
     private MyUserDetailService userDetailsService;
-    
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -35,7 +36,12 @@ public class SecurityConfiguration {
             registry.requestMatchers("/user/**").hasRole("USER");
             registry.anyRequest().authenticated();
         })
-        .formLogin(formLogin -> formLogin.permitAll())
+        .formLogin(httpSecurityFormLoginConfigurer -> {
+            httpSecurityFormLoginConfigurer
+                .loginPage("/login")
+                .successHandler(new AuthenticationSuccessHandler())
+                .permitAll();
+        })
         .build();
     }
 
