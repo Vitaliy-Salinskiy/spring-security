@@ -16,7 +16,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  jwt:
-    secret: adapter
-    expiration: 3600000
-    refresh-expiration: 604800000
+jwt:
+  secret: eyJhbGciOiJIUzUxMiJ9.ew0KICAic3ViIjogIjEyMzQ1Njc4OTAiLA0KICAibmFtZSI6ICJBbmlzaCBOYXRoIiwNCiAgImlhdCI6IDE1MTYyMzkwMjINCn0.Vyrjmp5pSKXkQp7tt_-lW94FWUoI1l_XR8e533tywaO5bDGHRMBOmFtKUpFOguLJrMHYdWlnXnG7cUeHAXrFpg
+  expiration: 3600000
+  refresh-expiration: 604800000
