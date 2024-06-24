@@ -1,5 +1,6 @@
 package com.security.auth.auth;
 
+import com.security.auth.model.CustomUserDetails;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -8,6 +9,7 @@ import io.jsonwebtoken.JwtParser;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -27,12 +29,15 @@ public class JwtTokenProvider {
     private Long jwtRefreshExpiration;
 
     public String generateToken(Authentication authentication) {
-        String username = authentication.getName();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
 
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(customUserDetails.getId().toString())
+                .claim("roles", customUserDetails.getRoles())
+                .claim("username", customUserDetails.getUsername())
+                .claim("email", customUserDetails.getEmail())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
@@ -40,12 +45,13 @@ public class JwtTokenProvider {
     }
 
     public  String generateRefreshToken(Authentication authentication ) {
-        String username = authentication.getName();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtRefreshExpiration);
 
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(customUserDetails.getId().toString())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)

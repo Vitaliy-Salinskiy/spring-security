@@ -1,10 +1,17 @@
 spring:
   application:
     name: auth
-  security:
-    user:
-      name: root
-      password: root
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          github:
+#            client-id: Ov23lip0EUwRn7f9RjNL
+#            client-secret: 62210effba76780e0e221febaaf49e123dae0b56
+#            scope: user:email
+#            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+#            authorization-grant-type: authorization_code
+#            client-name: GitHub
   datasource:
     url: jdbc:postgresql://localhost:5432/spring-security
     username: postgres
@@ -17,6 +24,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 jwt:
-  secret: eyJhbGciOiJIUzUxMiJ9.ew0KICAic3ViIjogIjEyMzQ1Njc4OTAiLA0KICAibmFtZSI6ICJBbmlzaCBOYXRoIiwNCiAgImlhdCI6IDE1MTYyMzkwMjINCn0.Vyrjmp5pSKXkQp7tt_-lW94FWUoI1l_XR8e533tywaO5bDGHRMBOmFtKUpFOguLJrMHYdWlnXnG7cUeHAXrFpg
+  secret: ew0KICAic3ViIjogIjEyMzQ1Njc4OTAiLA0KICAibmFtZSI6ICJBbmlzaCBOYXRoIiwNCiAgImlhdCI6IDE1MTYyMzkwMjINCn0LJrMHYdWlnXnG7cUeHAXrFpg
   expiration: 3600000
   refresh-expiration: 604800000
