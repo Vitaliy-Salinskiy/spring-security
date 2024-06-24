@@ -1,4 +1,10 @@
 spring:
+  application:
+    name: auth
+  security:
+    user:
+      name: root
+      password: root
   datasource:
     url: jdbc:postgresql://localhost:5432/spring-security
     username: postgres
@@ -6,12 +12,11 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    show-sql: true
+      ddl-auto: update
     properties:
       hibernate:
-        format_sql: true
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-  application:
-    name: auth
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  jwt:
+    secret: adapter
+    expiration: 3600000
+    refresh-expiration: 604800000
