@@ -1,6 +1,7 @@
 package com.security.auth.auth;
 
 import com.security.auth.model.CustomUserDetails;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -9,7 +10,6 @@ import io.jsonwebtoken.JwtParser;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -34,10 +34,10 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
 
         return Jwts.builder()
-                .setSubject(customUserDetails.getId().toString())
+                .setSubject(customUserDetails.getEmail())
                 .claim("roles", customUserDetails.getRoles())
                 .claim("username", customUserDetails.getUsername())
-                .claim("email", customUserDetails.getEmail())
+                .claim("userId", customUserDetails.getId())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
@@ -51,14 +51,14 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(now.getTime() + jwtRefreshExpiration);
 
         return Jwts.builder()
-                .setSubject(customUserDetails.getId().toString())
+                .setSubject(customUserDetails.getEmail())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public String getUsernameFromToken(String token) {
+    public String getEmailFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 

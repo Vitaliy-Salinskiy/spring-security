@@ -35,9 +35,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String jwt = getJwtFromRequest(request);
 
         if(StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)){
-            String username = jwtTokenProvider.getUsernameFromToken(jwt);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(jwtTokenProvider.getEmailFromToken(jwt));
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
@@ -55,6 +55,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         return null;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return path.startsWith("/api/auth/");
     }
 
 }

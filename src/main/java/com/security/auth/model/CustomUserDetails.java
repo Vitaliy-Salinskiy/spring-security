@@ -18,7 +18,7 @@ public class CustomUserDetails extends User implements UserDetails {
                 .map(role -> new GrantedAuthority() {
                     @Override
                     public String getAuthority() {
-                        return role.getName();
+                        return role.getName().name();
                     }
                 }).collect(Collectors.toSet());
     }
@@ -30,7 +30,7 @@ public class CustomUserDetails extends User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return super.getEmail();
+        return super.getUsername();
     }
 
     @Override
