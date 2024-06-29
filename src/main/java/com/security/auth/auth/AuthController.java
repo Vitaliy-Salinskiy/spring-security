@@ -21,7 +21,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,7 +61,6 @@ public class AuthController {
                     )
             );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
             String accessToken = jwtTokenProvider.generateToken(authentication);
             String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
 
@@ -129,5 +127,4 @@ public class AuthController {
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

@@ -9,8 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.URL;
 
 import java.util.Set;
 
@@ -18,7 +18,6 @@ import java.util.Set;
 @Table(name = "users")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 public class User {
 
@@ -32,17 +31,24 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @NotNull
-    @NotEmpty
     @Email
-    @Column(nullable = false, unique = true)
+    @Column
     private String email;
 
-    @NotNull
-    @NotEmpty
     @Size(min = 4, message = "Password should be at least 4 characters long")
-    @Column(nullable = false)
+    @Column
     private String password;
+
+    @Column(unique = true)
+    private String providerId;
+
+    @Column
+    @URL
+    private String imageUrl;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private ProviderEnum providerName;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
@@ -51,5 +57,18 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "name")
     )
     private Set<Role> roles;
+
+    public User() {
+        this.imageUrl = "https://tr.rbxcdn.com/38c6edcb50633730ff4cf39ac8859840/420/420/Hat/Webp";
+    }
+
+    public User(Long id, String username, String email, String password, Set<Role> roles) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+        this.imageUrl = "https://tr.rbxcdn.com/38c6edcb50633730ff4cf39ac8859840/420/420/Hat/Webp";
+    }
 
 }
