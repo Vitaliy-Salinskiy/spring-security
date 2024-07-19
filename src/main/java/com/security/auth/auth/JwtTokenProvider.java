@@ -38,6 +38,8 @@ public class JwtTokenProvider {
                 .claim("roles", customUserDetails.getRoles())
                 .claim("username", customUserDetails.getUsername())
                 .claim("userId", customUserDetails.getId())
+                .claim("img", customUserDetails.getImageUrl())
+                .claim("type", "access")
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
@@ -52,6 +54,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(customUserDetails.getEmail())
+                .claim("type", "refresh")
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
