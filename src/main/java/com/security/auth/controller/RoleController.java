@@ -6,6 +6,7 @@ import com.security.auth.model.Role;
 import com.security.auth.model.RoleEnum;
 import com.security.auth.repository.RoleRepository;
 
+import com.security.auth.service.impl.RoleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,19 +20,17 @@ import java.util.List;
 public class RoleController {
 
     @Autowired
-    private RoleRepository roleRepository;
+    private RoleServiceImpl roleService;
 
     @GetMapping()
      public List<Role>  getAllRoles(){
-        return roleRepository.findAll();
+        return roleService.findAllRoles();
     }
 
     @GetMapping("/{name}")
-    public ResponseEntity<Role>  getRoleByName(@PathVariable String name){
+    public ResponseEntity<Role>  getRoleByName(@PathVariable RoleEnum name){
         try {
-            RoleEnum roleEnum = RoleEnum.valueOf(name.toUpperCase());
-            return ResponseEntity.ok(roleRepository.findByName(roleEnum)
-                    .orElseThrow(() -> new CustomException("Error: Role: " + roleEnum + " is not found.", HttpStatus.NOT_FOUND)));
+            return ResponseEntity.ok(roleService.findFirstByName(name));
         }  catch (CustomException ex){
             throw ex;
         } catch (Exception ex){
@@ -42,11 +41,7 @@ public class RoleController {
     @PostMapping()
     public ResponseEntity<Role> createRole(@RequestBody RoleRequest roleRequest){
         try {
-            RoleEnum roleEnum = RoleEnum.valueOf(roleRequest.getRoleName().toUpperCase());
-            Role role = new Role();
-            role.setName(roleEnum);
-
-            Role savedRole = roleRepository.save(role);
+            Role savedRole = roleService.createRole(roleRequest.getRoleName());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(savedRole);
         } catch (Exception ex){

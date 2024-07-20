@@ -3,11 +3,12 @@ package com.security.auth.auth;
 import com.security.auth.dto.OAuth2UserRequest;
 import com.security.auth.model.GitHubEmail;
 import com.security.auth.model.ProviderEnum;
-import com.security.auth.service.AuthServiceImpl;
+import com.security.auth.service.impl.AuthServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import java.util.Objects;
 public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Autowired
+    @Lazy
     private AuthServiceImpl authService;
 
     @Autowired

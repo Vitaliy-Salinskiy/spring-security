@@ -28,7 +28,7 @@ public class User {
     @NotNull
     @NotEmpty
     @Size(min = 4, max = 25, message = "Username should be between 4 and 25 characters")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String username;
 
     @Email

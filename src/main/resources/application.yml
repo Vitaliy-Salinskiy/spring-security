@@ -22,6 +22,7 @@ spring:
     password: root
     driver-class-name: org.postgresql.Driver
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: update
 jwt:
@@ -34,3 +35,4 @@ logging:
     org:
       springframework:
         security: DEBUG
+
