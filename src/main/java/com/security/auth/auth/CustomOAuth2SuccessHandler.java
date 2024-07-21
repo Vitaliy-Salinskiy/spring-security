@@ -7,6 +7,7 @@ import com.security.auth.service.impl.AuthServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
@@ -61,14 +62,18 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             oAuth2UserRequest.setEmail((String) oAuth2User.getAttribute("email"));
         }
 
-        authService.loginByProvider(oAuth2UserRequest);
+        Long userId = authService.loginByProvider(response, oAuth2UserRequest);
 
-        getRedirectStrategy().sendRedirect(request, response, "/api/users");
+        if(userId != null) {
+          getRedirectStrategy().sendRedirect(request, response, "/api/users/" + userId);
+        } else {
+            getRedirectStrategy().sendRedirect(request, response, "/api/users");
+        }
 
         super.onAuthenticationSuccess(request, response, authentication);
     }
 
-    void getGithubUserEmail(OAuth2AuthenticationToken oauth2Token, OAuth2UserRequest oAuth2UserRequest) {
+    void getGithubUserEmail(@NotNull OAuth2AuthenticationToken oauth2Token, OAuth2UserRequest oAuth2UserRequest) {
         OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
                 oauth2Token.getAuthorizedClientRegistrationId(),
                 oauth2Token.getName()

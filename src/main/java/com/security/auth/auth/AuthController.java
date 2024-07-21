@@ -1,12 +1,12 @@
 package com.security.auth.auth;
 
+import com.security.auth.model.User;
 import com.security.auth.dto.LoginRequest;
 import com.security.auth.exception.CustomException;
 import com.security.auth.dto.SignupRequest;
 
 import com.security.auth.service.impl.AuthServiceImpl;
 import jakarta.validation.Valid;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,14 +50,16 @@ public class AuthController {
                     )
             );
 
-            String accessToken = jwtTokenProvider.generateToken(authentication);
-            String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
+            User user = (User) authentication.getPrincipal();
+
+            String accessToken = jwtTokenProvider.generateToken(user);
+            String refreshToken = jwtTokenProvider.generateRefreshToken(user);
 
             Map<String, String> tokens = new HashMap<>();
             tokens.put("accessToken", accessToken);
             tokens.put("refreshToken", refreshToken);
 
-            setCookies(response, accessToken, refreshToken);
+            jwtTokenProvider.setCookies(response, accessToken, refreshToken);
 
             return ResponseEntity.ok(tokens);
         }  catch (CustomException e){
@@ -79,22 +81,5 @@ public class AuthController {
         }
     }
 
-    private void setCookies (@NonNull HttpServletResponse response, String accessToken, String refreshToken){
-        try{
-            Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-            accessTokenCookie.setHttpOnly(false);
-            accessTokenCookie.setPath("/");
-            accessTokenCookie.setMaxAge((int) (jwtExpiration / 1000));
 
-            Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-            refreshTokenCookie.setHttpOnly(true);
-            refreshTokenCookie.setPath("/");
-            refreshTokenCookie.setMaxAge((int) (jwtRefreshExpiration / 1000));
-
-            response.addCookie(accessTokenCookie);
-            response.addCookie(refreshTokenCookie);
-        } catch (Exception e){
-            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }
