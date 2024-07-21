@@ -4,7 +4,6 @@ import com.security.auth.dto.RoleRequest;
 import com.security.auth.exception.CustomException;
 import com.security.auth.model.Role;
 import com.security.auth.model.RoleEnum;
-import com.security.auth.repository.RoleRepository;
 
 import com.security.auth.service.impl.RoleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

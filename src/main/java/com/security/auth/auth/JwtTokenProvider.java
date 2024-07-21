@@ -2,6 +2,7 @@ package com.security.auth.auth;
 
 import com.security.auth.exception.CustomException;
 
+import com.security.auth.model.RoleEnum;
 import com.security.auth.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -11,6 +12,7 @@ import io.jsonwebtoken.JwtParser;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
@@ -18,8 +20,10 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
@@ -33,7 +37,7 @@ public class JwtTokenProvider {
     @Value("${jwt.refresh-expiration}")
     private Long jwtRefreshExpiration;
 
-    public String generateToken(User user) {
+    public String generateToken(@NotNull User user) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
 
@@ -50,7 +54,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public  String generateRefreshToken(User user) {
+    public  String generateRefreshToken(@NotNull User user) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtRefreshExpiration);
 
@@ -68,7 +72,7 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String token) {
-      return !isTokenExpired(token);
+       return !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
@@ -117,6 +121,15 @@ public class JwtTokenProvider {
         } catch (Exception e){
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public List<RoleEnum> getRolesNamesFromToken(String token) {
+        return getClaimFromToken(token, claims -> {
+            List<Map<String, String>> roles = claims.get("roles", List.class);
+            return roles.stream()
+                    .map(role -> RoleEnum.valueOf(role.get("name")))
+                    .collect(Collectors.toList());
+        });
     }
 
 }

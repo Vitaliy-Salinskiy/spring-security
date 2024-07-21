@@ -1,10 +1,12 @@
 package com.security.auth.auth;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,16 +36,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String jwt = getJwtFromRequest(request);
 
-        if(StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)){
-            UserDetails userDetails = userDetailsService.loadUserByUsername(jwtTokenProvider.getEmailFromToken(jwt));
+        try {
+            if(StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)){
+                UserDetails userDetails = userDetailsService.loadUserByUsername(jwtTokenProvider.getEmailFromToken(jwt));
 
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (ExpiredJwtException e) {
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), "Token expired. Please log in again.");
+            return;
+        } catch (Exception e) {
+            response.sendError(HttpStatus.FORBIDDEN.value(), "Invalid token.");
+            return;
         }
-
         filterChain.doFilter(request, response);
     }
 

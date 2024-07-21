@@ -32,7 +32,7 @@ public class User {
     private String username;
 
     @Email
-    @Column
+    @Column(nullable = false)
     private String email;
 
     @Size(min = 4, message = "Password should be at least 4 characters long")
@@ -42,7 +42,7 @@ public class User {
     @Column(unique = true)
     private String providerId;
 
-    @Column
+    @Column(nullable = false)
     @URL
     private String imageUrl;
 
