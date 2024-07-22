@@ -12,5 +12,6 @@ public interface UserService {
     User registerOAuth2User(OAuth2UserRequest oAuth2UserRequest);
     Optional<User> findFirstByEmail(String email);
     Optional<User> findFirstByUsername(String username);
+    Optional<User> findFirstById(Long id);
     Optional<User> findFirstByProviderId(String provideId);
 }

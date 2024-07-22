@@ -44,12 +44,30 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void registerUserByCredentials(SignupRequest signUpRequest) {
+    public void registerUserByCredentials(@NotNull @Valid SignupRequest signUpRequest) {
         if(userService.existsByEmail(signUpRequest.getEmail())) {
             throw new CustomException("Error: Email: " + signUpRequest.getEmail()  + " is already in use!", HttpStatus.CONFLICT);
         }
 
         userService.registerUserByCredentials(signUpRequest);
+    }
+
+    @Override
+    public void refreshTokens(HttpServletResponse response, String refreshToken) {
+        String tokenType = jwtTokenProvider.getTokenType(refreshToken);
+
+        if(!tokenType.equals("refresh")){
+            throw new CustomException("Invalid token type", HttpStatus.BAD_REQUEST);
+        }
+
+        Long id = jwtTokenProvider.getUserIdFromToken(refreshToken);
+        User user = userService.findFirstById(id)
+                .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+
+        String accessToken = jwtTokenProvider.generateToken(user);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(user);
+
+        jwtTokenProvider.setCookies(response, accessToken, newRefreshToken);
     }
 
 }

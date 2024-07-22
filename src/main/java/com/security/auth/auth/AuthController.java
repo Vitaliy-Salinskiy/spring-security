@@ -6,9 +6,12 @@ import com.security.auth.exception.CustomException;
 import com.security.auth.dto.SignupRequest;
 
 import com.security.auth.service.impl.AuthServiceImpl;
+import com.security.auth.service.impl.UserServiceImpl;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletResponse;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -39,6 +42,9 @@ public class AuthController {
 
     @Autowired
     private AuthServiceImpl authService;
+
+    @Autowired
+    private UserServiceImpl userService;
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> authenticateUser(@Valid @NonNull @RequestBody LoginRequest loginRequest, HttpServletResponse response){
@@ -81,5 +87,18 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<String> refreshTokens(@NotNull @CookieValue("refreshToken") String refreshToken, HttpServletResponse response){
+        try {
+            authService.refreshTokens(response, refreshToken);
+            return ResponseEntity.ok("Tokens refreshed successfully!");
+        } catch (CustomException e){
+            throw e;
+        } catch (ExpiredJwtException e) {
+            throw new CustomException("Token has expired", HttpStatus.UNAUTHORIZED);
+        } catch (Exception e){
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

@@ -39,6 +39,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> findFirstById(Long id) {
+        return userRepository.findFirstById(id);
+    }
+
+    @Override
     public Optional<User> findFirstByProviderId(String provideId) {
         return userRepository.findFirstByProviderId(provideId);
     }

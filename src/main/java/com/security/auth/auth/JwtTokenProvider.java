@@ -60,6 +60,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(user.getEmail())
+                .claim("userId", user.getId())
                 .claim("type", "refresh")
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
@@ -69,6 +70,14 @@ public class JwtTokenProvider {
 
     public String getEmailFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    public Long getUserIdFromToken(String token) {
+        return getClaimFromToken(token, claims -> claims.get("userId", Long.class));
+    }
+
+    public String getTokenType(String token) {
+        return getClaimFromToken(token, claims -> claims.get("type", String.class));
     }
 
     public boolean validateToken(String token) {
