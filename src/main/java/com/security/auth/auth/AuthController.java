@@ -6,7 +6,6 @@ import com.security.auth.exception.CustomException;
 import com.security.auth.dto.SignupRequest;
 
 import com.security.auth.service.impl.AuthServiceImpl;
-import com.security.auth.service.impl.UserServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,9 +41,6 @@ public class AuthController {
 
     @Autowired
     private AuthServiceImpl authService;
-
-    @Autowired
-    private UserServiceImpl userService;
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> authenticateUser(@Valid @NonNull @RequestBody LoginRequest loginRequest, HttpServletResponse response){
@@ -96,6 +92,16 @@ public class AuthController {
             throw e;
         } catch (ExpiredJwtException e) {
             throw new CustomException("Token has expired", HttpStatus.UNAUTHORIZED);
+        } catch (Exception e){
+            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletResponse response) {
+        try {
+            jwtTokenProvider.clearCookies(response);
+            return ResponseEntity.ok("Logged out successfully!");
         } catch (Exception e){
             throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

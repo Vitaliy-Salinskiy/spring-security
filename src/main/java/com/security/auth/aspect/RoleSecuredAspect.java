@@ -4,7 +4,6 @@ import com.security.auth.annotation.RoleSecured;
 import com.security.auth.auth.JwtTokenProvider;
 import com.security.auth.exception.CustomException;
 import com.security.auth.model.RoleEnum;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;

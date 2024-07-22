@@ -1,7 +1,5 @@
 package com.security.auth.auth;
 
-import com.security.auth.exception.CustomException;
-
 import com.security.auth.model.RoleEnum;
 import com.security.auth.model.User;
 import io.jsonwebtoken.Jwts;
@@ -14,7 +12,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -113,8 +110,7 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    public void setCookies (@NonNull HttpServletResponse response, String accessToken, String refreshToken){
-        try{
+    public void setCookies (@NonNull HttpServletResponse response, String accessToken, String refreshToken) {
             Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
             accessTokenCookie.setHttpOnly(false);
             accessTokenCookie.setPath("/");
@@ -127,9 +123,21 @@ public class JwtTokenProvider {
 
             response.addCookie(accessTokenCookie);
             response.addCookie(refreshTokenCookie);
-        } catch (Exception e){
-            throw new CustomException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    }
+
+    public void clearCookies (@NotNull HttpServletResponse response) {
+        Cookie accessTokenCookie = new Cookie("accessToken", null);
+        accessTokenCookie.setHttpOnly(false);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(0);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0);
+
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
     }
 
     public List<RoleEnum> getRolesNamesFromToken(String token) {
